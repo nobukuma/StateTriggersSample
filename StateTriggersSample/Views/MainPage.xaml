@@ -1,0 +1,207 @@
+﻿<prism:SessionStateAwarePage
+    x:Class="StateTriggersSample.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:StateTriggersSample"
+    xmlns:vm="using:StateTriggersSample.ViewModels"
+    xmlns:system="using:System"
+    xmlns:prism="using:Prism.Windows.Mvvm"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:wintrigger="using:WindowsStateTriggers"
+    xmlns:trigger="using:StateTriggersSample.Triggers"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    prism:ViewModelLocator.AutoWireViewModel="True">
+
+    <Grid x:Name="Root" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="Row0" Height="Auto"/>
+            <RowDefinition x:Name="Row1" Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="Column0" Width="1*"/>
+            <ColumnDefinition x:Name="Column1" Width="1*"/>
+            <ColumnDefinition x:Name="Column2" Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="IconImage" Grid.Row="0" Grid.Column="0"
+            Background="Bisque">
+            <Image
+                Width="80"
+                Stretch="Uniform"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Source="ms-appx:///Assets/icon.png"/>
+        </Grid>
+
+        <ListView x:Name="ItemsList" Grid.Row="1" Grid.Column="0"
+            Background="Cornsilk"
+            HorizontalAlignment="Stretch"
+            ItemsSource="{Binding ItemsList, Mode=OneWay}"
+            SelectedIndex="{x:Bind ViewModel.SelectedIndex, Mode=TwoWay}">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="vm:ListItem">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4">
+                        <TextBlock Text="{x:Bind Name, Mode=OneWay}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+
+            <i:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="SelectionChanged">
+                    <core:InvokeCommandAction
+                        Command="{x:Bind ViewModel.SelectionChangedCommand, Mode=OneWay}"/>
+                </core:EventTriggerBehavior>
+            </i:Interaction.Behaviors>
+        </ListView>
+
+        <TextBox x:Name="ItemInfo" Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
+            Background="Aquamarine"
+            IsEnabled="false"
+            Text="{x:Bind ViewModel.ItemInfoText, Mode=OneWay}"/>
+        
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="LayoutVisualStateGroup">
+                
+                <!-- 電話のポートレート表示：リスト画面（未選択） -->
+                <VisualState x:Name="PhonePortraitItemsListView">
+                    <VisualState.StateTriggers>
+                        <wintrigger:CompositeStateTrigger Operator="And">
+                            <wintrigger:CompositeStateTrigger.StateTriggers>
+                                <wintrigger:OrientationStateTrigger Orientation="Portrait"/>
+                                <wintrigger:DeviceFamilyStateTrigger DeviceFamily="Mobile"/>
+                                <wintrigger:UserInteractionModeTrigger InteractionMode="Touch"/>
+                                <wintrigger:IsFalseStateTrigger Value="{x:Bind ViewModel.IsItemsListSelected, Mode=OneWay}"/>
+                            </wintrigger:CompositeStateTrigger.StateTriggers>
+                        </wintrigger:CompositeStateTrigger>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="Row0.Height" Value="Auto"/>
+                        <Setter Target="Row1.Height" Value="*"/>
+
+                        <Setter Target="Column0.Width" Value="*"/>
+                        <Setter Target="Column1.Width" Value="0"/>
+                        <Setter Target="Column2.Width" Value="0"/>
+                        
+                        <Setter Target="IconImage.(Grid.Column)" Value="0" />
+                        <Setter Target="IconImage.(Grid.Row)" Value="0" />
+                        <Setter Target="IconImage.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="IconImage.(Grid.RowSpan)" Value="1" />
+
+                        <Setter Target="ItemsList.(Grid.Column)" Value="0" />
+                        <Setter Target="ItemsList.(Grid.Row)" Value="1" />
+                        <Setter Target="ItemsList.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="ItemsList.(Grid.RowSpan)" Value="1" />
+                        
+                        <Setter Target="ItemInfo.(Grid.Column)" Value="1"/>
+                        <Setter Target="ItemInfo.(Grid.Row)" Value="0"/>
+                        <Setter Target="ItemInfo.(Grid.ColumnSpan)" Value="1"/>
+                        <Setter Target="ItemInfo.(Grid.RowSpan)" Value="2"/>
+                    </VisualState.Setters>
+                </VisualState>    
+                
+                <!-- 電話のランドスケープ表示：リスト画面（未選択） -->
+                <VisualState x:Name="PhoneLandscapeItemsListView">
+                    <VisualState.StateTriggers>
+                        <wintrigger:CompositeStateTrigger Operator="And">
+                            <wintrigger:CompositeStateTrigger.StateTriggers>
+                                <wintrigger:OrientationStateTrigger Orientation="Landscape"/>
+                                <wintrigger:DeviceFamilyStateTrigger DeviceFamily="Mobile"/>
+                                <wintrigger:UserInteractionModeTrigger InteractionMode="Touch"/>
+                                <wintrigger:IsFalseStateTrigger Value="{x:Bind ViewModel.IsItemsListSelected, Mode=OneWay}"/>
+                            </wintrigger:CompositeStateTrigger.StateTriggers>
+                        </wintrigger:CompositeStateTrigger>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="Row0.Height" Value="*"/>
+                        <Setter Target="Row1.Height" Value="0"/>
+
+                        <Setter Target="Column0.Width" Value="1*"/>
+                        <Setter Target="Column1.Width" Value="2*"/>
+                        <Setter Target="Column2.Width" Value="0"/>
+                        
+                        <Setter Target="IconImage.(Grid.Column)" Value="0" />
+                        <Setter Target="IconImage.(Grid.Row)" Value="0" />
+                        <Setter Target="IconImage.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="IconImage.(Grid.RowSpan)" Value="1" />
+
+                        <Setter Target="ItemsList.(Grid.Column)" Value="1" />
+                        <Setter Target="ItemsList.(Grid.Row)" Value="0" />
+                        <Setter Target="ItemsList.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="ItemsList.(Grid.RowSpan)" Value="1" />
+
+                        <Setter Target="ItemInfo.(Grid.Column)" Value="2"/>
+                        <Setter Target="ItemInfo.(Grid.Row)" Value="0"/>
+                        <Setter Target="ItemInfo.(Grid.ColumnSpan)" Value="1"/>
+                        <Setter Target="ItemInfo.(Grid.RowSpan)" Value="1"/>
+                    </VisualState.Setters>
+                </VisualState>
+
+                <!-- 電話のランドスケープ表示：リスト要素詳細画面（リスト選択中） -->
+                <VisualState x:Name="PhoneItemInfoView">
+                    <VisualState.StateTriggers>
+                        <wintrigger:CompositeStateTrigger Operator="And">
+                            <wintrigger:DeviceFamilyStateTrigger DeviceFamily="Mobile"/>
+                            <wintrigger:UserInteractionModeTrigger InteractionMode="Touch"/>
+                            <trigger:IsTrueStateTrigger  Value="{x:Bind ViewModel.IsItemsListSelected, Mode=OneWay}"/>
+                        </wintrigger:CompositeStateTrigger>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="Row0.Height" Value="*"/>
+                        <Setter Target="Row1.Height" Value="0"/>
+
+                        <Setter Target="Column0.Width" Value="0"/>
+                        <Setter Target="Column1.Width" Value="0"/>
+                        <Setter Target="Column2.Width" Value="*"/>
+                        
+                        <Setter Target="IconImage.(Grid.Column)" Value="0" />
+                        <Setter Target="IconImage.(Grid.Row)" Value="0" />
+                        <Setter Target="IconImage.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="IconImage.(Grid.RowSpan)" Value="1" />
+
+                        <Setter Target="ItemsList.(Grid.Column)" Value="0" />
+                        <Setter Target="ItemsList.(Grid.Row)" Value="1" />
+                        <Setter Target="ItemsList.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="ItemsList.(Grid.RowSpan)" Value="1" />
+                        
+                        <Setter Target="ItemInfo.(Grid.Column)" Value="2"/>
+                        <Setter Target="ItemInfo.(Grid.Row)" Value="0"/>
+                        <Setter Target="ItemInfo.(Grid.ColumnSpan)" Value="1"/>
+                        <Setter Target="ItemInfo.(Grid.RowSpan)" Value="1"/>
+                    </VisualState.Setters>
+                </VisualState>
+
+                <!-- PCもしくはContinuum: リスト画面とリスト要素詳細画面を1画面に表示 -->
+                <VisualState x:Name="Continuum">
+                    <VisualState.StateTriggers>
+                        <wintrigger:UserInteractionModeTrigger InteractionMode="Mouse"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="Row0.Height" Value="Auto"/>
+                        <Setter Target="Row1.Height" Value="*"/>
+
+                        <Setter Target="Column0.Width" Value="1*"/>
+                        <Setter Target="Column1.Width" Value="0"/>
+                        <Setter Target="Column2.Width" Value="2*"/>
+
+                        <Setter Target="IconImage.(Grid.Column)" Value="0" />
+                        <Setter Target="IconImage.(Grid.Row)" Value="0" />
+                        <Setter Target="IconImage.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="IconImage.(Grid.RowSpan)" Value="1" />
+
+                        <Setter Target="ItemsList.(Grid.Column)" Value="0" />
+                        <Setter Target="ItemsList.(Grid.Row)" Value="1" />
+                        <Setter Target="ItemsList.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="ItemsList.(Grid.RowSpan)" Value="1" />
+                        
+                        <Setter Target="ItemInfo.(Grid.Column)" Value="2"/>
+                        <Setter Target="ItemInfo.(Grid.Row)" Value="0"/>
+                        <Setter Target="ItemInfo.(Grid.ColumnSpan)" Value="1"/>
+                        <Setter Target="ItemInfo.(Grid.RowSpan)" Value="2"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</prism:SessionStateAwarePage>
